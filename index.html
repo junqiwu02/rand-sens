@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Get a random sensitivity!" />
     <title>rand-sens</title>
     <!-- from https://css-tricks.com/emoji-as-a-favicon/ -->
     <link
@@ -13,8 +14,8 @@
   </head>
   <body>
     <nav>
-      <h1>🎯</h1>
-      <a href="https://github.com/junqiwu02/rand-sens">
+      <a aria-label="Home" href="/">🎯</a>
+      <a aria-label="View source on GitHub" href="https://github.com/junqiwu02/rand-sens">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -86,9 +87,10 @@
 
         <button type="submit">Generate</button>
       </form>
-      <div class="result" id="res-container" hidden>
+      <div id="res-container">
         <h2>Result</h2>
         <pre id="res"></pre>
+        <button id="copy-btn">Copy</button>
         <p>Bookmark to get a new result on every visit.</p>
       </div>
     </main>

@@ -15,6 +15,13 @@ function gaussianRandom(mean, stdev) {
 }
 
 function main() {
+  document.getElementById("uni").addEventListener("change", function () {
+    document.getElementById("diff-label").textContent = "Max Difference";
+  });
+  document.getElementById("norm").addEventListener("change", function () {
+    document.getElementById("diff-label").textContent = "Standard Deviation";
+  });
+
   if (!window.location.search) {
     return;
   }
@@ -38,23 +45,14 @@ function main() {
     return;
   }
 
-  document.getElementById("res-container").removeAttribute("hidden");
-
   // populate form
   document.getElementById("uni").checked = params.get("dist") === "uni";
   document.getElementById("norm").checked = params.get("dist") === "norm";
   document.getElementById("avg").value = avg;
   document.getElementById("diff").value = diff;
 
-  const diffLabel = document.getElementById("diff-label");
-  diffLabel.textContent =
+  document.getElementById("diff-label").textContent =
     params.get("dist") === "uni" ? "Max Difference" : "Standard Deviation";
-  document.getElementById("uni").addEventListener("change", function () {
-    diffLabel.textContent = "Max Difference";
-  });
-  document.getElementById("norm").addEventListener("change", function () {
-    diffLabel.textContent = "Standard Deviation";
-  });
 }
 
 document.addEventListener("DOMContentLoaded", main);

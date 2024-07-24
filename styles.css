@@ -1,31 +1,11 @@
-:root {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
-}
-
 body {
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
+  /* background: var(--background);
+  color: var(--foreground); */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 nav {
@@ -55,7 +35,7 @@ label {
 
 input {
   padding: 0.5rem;
-  border: 1px solid hsl(var(--border));
+  /* border: 1px solid var(--border); */
   border-radius: 0.5rem;
 }
 
@@ -68,23 +48,23 @@ input[type="number"] {
 
 button {
   padding: 0.5rem;
-  border: 1px solid hsl(var(--border));
+  /* border: 1px solid var(--border); */
   border-radius: 0.5rem;
-  background: hsl(var(--card));
-  color: hsl(var(--card-foreground));
+  /* background: var(--card);
+  color: var(--card-foreground); */
 }
 
 button:hover {
-  background: hsl(var(--card-foreground));
-  color: hsl(var(--card));
+  /* background: var(--card-foreground);
+  color: var(--card); */
 }
 
 .hero {
   text-align: center;
 }
 
-.result {
-  border: 1px solid hsl(var(--border));
+.res-dialog {
+  /* border: 1px solid var(--border); */
   border-radius: 0.5rem;
   padding: 1rem;
 }
