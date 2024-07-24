@@ -8,7 +8,6 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,21 +20,46 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { MainChart } from "./main-chart";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export default function Home({ searchParams }: { searchParams: any }) {
+export default function Home() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams);
 
-  const test = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const params = new URLSearchParams(formData as any);
-    router.push(`?${params.toString()}`);
+  const handleChange = (name: string, value: string) => {
+    params.set(name, value);
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
-  console.log(JSON.stringify(searchParams, null, 2));
+  const dist = params.get("dist") || "uni";
+  const diff = parseFloat(params.get("diff") || "0.5");
+  const avg = parseFloat(params.get("avg") || "0.5");
 
-  // TODO: parallel routes to display the result
+  const chartData: any[] = [];
+  for (let i = 0; i < 2 * avg; i += 0.05 * avg) {
+    let prob = 0;
+    if (dist === "norm") {
+      // Calculate the height of the normal distribution at point i
+      const exponent = -Math.pow(i - avg, 2) / (2 * Math.pow(diff, 2));
+      prob = (1 / (diff * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
+    } else {
+      if (avg - diff <= i && i <= avg + diff) {
+        prob = 1 / (2 * diff);
+      } else {
+        prob = 0;
+      }
+    }
+
+    chartData.push({
+      sens: i,
+      prob: prob,
+    });
+  }
+
+  // TODO: decouple animations from default values
+  // Since clearing an input resets the input value to the default value
 
   return (
     <>
@@ -49,56 +73,66 @@ export default function Home({ searchParams }: { searchParams: any }) {
             🎯 rand-sens
             <CardDescription>Get a random sensivity!</CardDescription>
           </CardHeader>
-          <form onSubmit={test}>
-            <CardContent className="flex flex-col gap-4">
-              <div>
-                <Label htmlFor="dist">Distribution</Label>
-                <Select name="dist" defaultValue="uni" required>
-                  <SelectTrigger id="dist">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="uni">Uniform</SelectItem>
-                      <SelectItem value="norm">Normal</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+          <CardContent className="flex flex-col gap-4">
+            <div>
+              <Label htmlFor="dist">Distribution</Label>
+              <Select
+                name="dist"
+                value={dist}
+                onValueChange={(value) => handleChange("dist", value)}
+                required
+              >
+                <SelectTrigger id="dist">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="uni">Uniform</SelectItem>
+                    <SelectItem value="norm">Normal</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
 
-              <MainChart />
+            <MainChart lineType={dist === "norm" ? "monotone" : "step"} chartData={chartData} />
 
-              <div>
-                <Label htmlFor="avg">Average Sens</Label>
-                <Input
-                  id="avg"
-                  type="number"
-                  name="avg"
-                  defaultValue="0.5"
-                  step={0.001}
-                  required
-                />
-                <Label htmlFor="diff">Max Difference</Label>
-                <Input
-                  id="diff"
-                  type="number"
-                  name="diff"
-                  defaultValue="0.5"
-                  step={0.001}
-                  required
-                />
-              </div>
+            <div>
+              <Label htmlFor="avg">Average Sens</Label>
+              <Input
+                id="avg"
+                type="number"
+                name="avg"
+                value={avg}
+                step={0.001}
+                onChange={(e) => handleChange(e.target.name, e.target.value)}
+                required
+              />
+              <Label htmlFor="diff">Max Difference</Label>
+              <Input
+                id="diff"
+                type="number"
+                name="diff"
+                value={diff}
+                step={0.001}
+                onChange={(e) => handleChange(e.target.name, e.target.value)}
+                required
+              />
+            </div>
 
-              <div className="flex items-center gap-2">
-                <Checkbox name="bare" id="bare" />
-                <Label htmlFor="bare">Bare-bones Result</Label>
-              </div>
-            </CardContent>
+            <div>
+              <Label htmlFor="res">Result</Label>
+              <Input id="res" name="res" readOnly />
+              <p className="text-xs text-muted-foreground">
+                Bookmark to get a new result on every visit!
+              </p>
+            </div>
+          </CardContent>
 
-            <CardFooter>
-              <Button>Generate</Button>
-            </CardFooter>
-          </form>
+          <CardFooter>
+            <Button variant="link" className="p-0 text-muted-foreground">
+              Bare-bones Mode
+            </Button>
+          </CardFooter>
         </Card>
       </main>
     </>

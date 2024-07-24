@@ -1,34 +1,16 @@
 "use client";
 
-import { GitCommitVertical, TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-];
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  prob: {
+    label: "Prob",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
-export function MainChart() {
+export function MainChart({ lineType, chartData }: { lineType: "step" | "monotone", chartData: any[] }) {
   return (
     <ChartContainer config={chartConfig}>
       <AreaChart
@@ -41,47 +23,35 @@ export function MainChart() {
       >
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="month"
+          type="number"
+          dataKey="sens"
           tickLine={false}
           axisLine={false}
-          tickMargin={8}
-          tickFormatter={(value) => value.slice(0, 3)}
+          tickCount={3}
+          domain={["dataMin", "dataMax"]}
+          tickFormatter={(value) => value.toFixed(1)}
         />
         <defs>
-          <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="fillProb" x1="0" y1="0" x2="0" y2="1">
             <stop
               offset="5%"
-              stopColor="var(--color-desktop)"
+              stopColor="var(--color-prob)"
               stopOpacity={0.8}
             />
             <stop
               offset="95%"
-              stopColor="var(--color-desktop)"
+              stopColor="var(--color-prob)"
               stopOpacity={0.1}
             />
           </linearGradient>
         </defs>
         <Area
-          dataKey="desktop"
-          type="natural"
-          fill="url(#fillDesktop)"
+          dataKey="prob"
+          type={lineType}
+          fill="url(#fillProb)"
           fillOpacity={0.4}
-          stroke="var(--color-desktop)"
+          stroke="var(--color-prob)"
           stackId="a"
-          dot={({ cx, cy, payload }) => {
-            const r = 24;
-            return (
-              <GitCommitVertical
-                key={payload.month}
-                x={cx - r / 2}
-                y={cy - r / 2}
-                width={r}
-                height={r}
-                fill="hsl(var(--background))"
-                stroke="var(--color-desktop)"
-              />
-            );
-          }}
         />
       </AreaChart>
     </ChartContainer>
