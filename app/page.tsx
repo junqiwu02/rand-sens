@@ -21,15 +21,17 @@ import {
 import Link from "next/link";
 import { MainChart } from "./main-chart";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { getStats, random } from "./api/route";
 import { RefreshCw } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast"
 
 export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+  const [res, setRes] = useState("");
+  const { toast } = useToast();
 
   const handleChange = (name: string, value: string) => {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -73,7 +75,17 @@ export default function Home() {
     return { x, y: calcY(x) };
   });
 
-  const res = random(dist, avg, diff);
+  // const res = random(dist, avg, diff);
+  useEffect(() => {
+    setRes(random(dist, avg, diff));
+  }, [dist, avg, diff]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(res);
+    toast({
+      description: "📋 Copied to clipboard!",
+    });
+  };
 
   return (
     <>
@@ -158,12 +170,12 @@ export default function Home() {
                   name="res"
                   readOnly
                   value={res}
+                  onClick={handleCopy}
                 />
-                {/* TODO: Add a button to copy the result to clipboard */}
                 <Button
                   variant="ghost"
                   className="p-2"
-                  onClick={forceUpdate}
+                  onClick={() => setRes(random(dist, avg, diff))}
                 >
                   <RefreshCw className="w-4 h-4" />
                 </Button>
