@@ -80,14 +80,18 @@ export default function Home() {
   return (
     <>
       <nav className="flex items-center justify-between p-8">
-        <a href="/">🎯</a>
-        <a
-          href="https://github.com/junqiwu02/rand-sens"
-          target="_blank"
-          rel="noreferrer"
-        >
-          ⭐ on GitHub
-        </a>
+        <Button variant="link" className="p-0" asChild>
+          <a href="/">🎯</a>
+        </Button>
+        <Button variant="link" className="p-0" asChild>
+          <a
+            href="https://github.com/junqiwu02/rand-sens"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ⭐ on GitHub
+          </a>
+        </Button>
       </nav>
       <main className="flex flex-col items-center justify-between px-24">
         <Card>
@@ -178,9 +182,7 @@ export default function Home() {
               className="p-0 text-muted-foreground"
               asChild
             >
-              <Link href={`${pathname}bare?${params.toString()}`}>
-                Bare-bones Mode
-              </Link>
+              <Link href={`${pathname}api?${params.toString()}`}>API Mode</Link>
             </Button>
           </CardFooter>
         </Card>

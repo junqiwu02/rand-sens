@@ -1,5 +1,8 @@
-export default function Bare({ searchParams }: { searchParams: any }) {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
   const params = new URLSearchParams(searchParams);
+
+  // TODO: share this logic with home page
   const dist = params.get("dist") || "uni";
   const avg = parseFloat(params.get("avg") || "1");
   const diff = parseFloat(params.get("diff") || "0.5");
@@ -17,11 +20,7 @@ export default function Bare({ searchParams }: { searchParams: any }) {
     return z * diff + avg;
   };
 
-  let res = dist === "norm" ? normalRandom() : uniformRandom();
+  const res = dist === "norm" ? normalRandom() : uniformRandom();
 
-  return (
-    <>
-      <pre className="text-mono text-sm p-2">{res.toFixed(3)}</pre>
-    </>
-  );
+  return new Response(res.toFixed(3));
 }

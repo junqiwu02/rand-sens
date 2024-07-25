@@ -29,6 +29,7 @@ export function MainChart({ lineType, chartData }: { lineType: "step" | "monoton
           axisLine={false}
           ticks={[chartData[0].sens, chartData.at(Math.floor(chartData.length / 2)).sens, chartData.at(-1).sens]}
           domain={["dataMin", "dataMax"]}
+          // TODO fix tick rounding
           tickFormatter={(value) => value.toFixed(1)}
         />
         <defs>
