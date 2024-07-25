@@ -27,7 +27,7 @@ export function MainChart({ lineType, chartData }: { lineType: "step" | "monoton
           dataKey="sens"
           tickLine={false}
           axisLine={false}
-          tickCount={3}
+          ticks={[chartData[0].sens, chartData.at(Math.floor(chartData.length / 2)).sens, chartData.at(-1).sens]}
           domain={["dataMin", "dataMax"]}
           tickFormatter={(value) => value.toFixed(1)}
         />
