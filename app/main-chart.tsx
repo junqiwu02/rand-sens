@@ -13,7 +13,7 @@ export function MainChart({
   chartData,
   ticks,
 }: {
-  lineType: "step" | "monotone";
+  lineType: "stepAfter" | "monotone";
   chartData: any[];
   ticks: number[];
 }) {

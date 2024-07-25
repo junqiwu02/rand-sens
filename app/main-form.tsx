@@ -14,14 +14,13 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import { MainChart } from "@/app/main-chart";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getStats, random } from "@/app/api/route";
 import { RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function MainForm() {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [res, setRes] = useState("");
@@ -34,7 +33,8 @@ export default function MainForm() {
     } else {
       newSearchParams.delete(name);
     }
-    router.replace(`${pathname}?${newSearchParams.toString()}`);
+    // use native API to avoid re-rendering server components
+    window.history.replaceState(null, '', `${pathname}?${newSearchParams.toString()}`);
   };
 
   const { dist, avg, diff } = getStats(searchParams);
@@ -45,7 +45,8 @@ export default function MainForm() {
       const exponent = -Math.pow(x - avg, 2) / (2 * Math.pow(diff, 2));
       return (1 / (diff * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
     }
-    return avg - diff <= x && x <= avg + diff ? 1 / (2 * diff) : 0;
+    // exclude right side to get correct behavior for stepAfter
+    return avg - diff <= x && x < avg + diff ? 1 / (2 * diff) : 0;
   };
 
   const keypoints = [0, 2 * avg];
@@ -66,14 +67,12 @@ export default function MainForm() {
   keypoints.sort((a, b) => a - b);
 
   const ticks = avg === 0 ? [0] : [0, avg, 2 * avg];
-  // TODO need to fix unifrom chart data since step line steps at the midpoint and not the specific point.
   const chartData = keypoints.map((x) => {
     // clamp x to [0, 2 * avg]
     x = Math.min(Math.max(x, 0), 2 * avg);
     return { x, y: calcY(x) };
   });
 
-  // const res = random(dist, avg, diff);
   useEffect(() => {
     setRes(random(dist, avg, diff));
   }, [dist, avg, diff]);
@@ -109,7 +108,7 @@ export default function MainForm() {
         </div>
 
         <MainChart
-          lineType={dist === "norm" ? "monotone" : "step"}
+          lineType={dist === "norm" ? "monotone" : "stepAfter"}
           chartData={chartData}
           ticks={ticks}
         />
