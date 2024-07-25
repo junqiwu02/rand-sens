@@ -1,57 +1,57 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 const chartConfig = {
-  prob: {
-    label: "Prob",
+  y: {
+    label: "Y",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
-export function MainChart({ lineType, chartData }: { lineType: "step" | "monotone", chartData: any[] }) {
+export function MainChart({ lineType, chartData, ticks }: { lineType: "step" | "monotone", chartData: any[], ticks: number[] }) {
   return (
     <ChartContainer config={chartConfig}>
       <AreaChart
         accessibilityLayer
         data={chartData}
         margin={{
-          left: 12,
-          right: 12,
+          left: 8,
+          right: 8,
         }}
       >
         <CartesianGrid vertical={false} />
         <XAxis
           type="number"
-          dataKey="sens"
+          dataKey="x"
           tickLine={false}
           axisLine={false}
-          ticks={[chartData[0].sens, chartData.at(Math.floor(chartData.length / 2)).sens, chartData.at(-1).sens]}
+          ticks={ticks}
           domain={["dataMin", "dataMax"]}
-          // TODO fix tick rounding
-          tickFormatter={(value) => value.toFixed(1)}
+          // 3 significant digits, remove trailing zeros
+          tickFormatter={(value) => value.toPrecision(3).replace(/(\.\d*[1-9])0+$|\.0*$/, '$1')}
         />
         <defs>
-          <linearGradient id="fillProb" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
             <stop
               offset="5%"
-              stopColor="var(--color-prob)"
+              stopColor="var(--color-y)"
               stopOpacity={0.8}
             />
             <stop
               offset="95%"
-              stopColor="var(--color-prob)"
+              stopColor="var(--color-y)"
               stopOpacity={0.1}
             />
           </linearGradient>
         </defs>
         <Area
-          dataKey="prob"
+          dataKey="y"
           type={lineType}
-          fill="url(#fillProb)"
+          fill="url(#grad)"
           fillOpacity={0.4}
-          stroke="var(--color-prob)"
+          stroke="var(--color-y)"
           stackId="a"
         />
       </AreaChart>

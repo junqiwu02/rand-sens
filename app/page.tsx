@@ -22,60 +22,58 @@ import Link from "next/link";
 import { MainChart } from "./main-chart";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useReducer } from "react";
+import { getStats, random } from "./api/route";
+import { RefreshCw } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
-  console.log(pathname);
   const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   const handleChange = (name: string, value: string) => {
+    const newSearchParams = new URLSearchParams(searchParams);
     if (value) {
-      params.set(name, value);
+      newSearchParams.set(name, value);
     } else {
-      params.delete(name);
+      newSearchParams.delete(name);
     }
-    router.replace(`${pathname}?${params.toString()}`);
+    router.replace(`${pathname}?${newSearchParams.toString()}`);
   };
 
-  const dist = params.get("dist") || "uni";
-  const avg = parseFloat(params.get("avg") || "1");
-  const diff = parseFloat(params.get("diff") || "0.5");
+  const { dist, avg, diff } = getStats(searchParams);
 
-  const chartData = [];
-  const step = avg === 0 ? 0.05 : 0.05 * avg;
-  for (let i = 0; i <= 2 * avg; i += step) {
-    let prob = 0;
+  // height of probability distribution at x
+  const calcY = (x: number) => {
     if (dist === "norm") {
-      // Calculate the height of the normal distribution at point i
-      const exponent = -Math.pow(i - avg, 2) / (2 * Math.pow(diff, 2));
-      prob = (1 / (diff * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
-    } else if (avg - diff <= i && i <= avg + diff) {
-      prob = 1 / (2 * diff);
+      const exponent = -Math.pow(x - avg, 2) / (2 * Math.pow(diff, 2));
+      return (1 / (diff * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
     }
+    return avg - diff <= x && x <= avg + diff ? 1 / (2 * diff) : 0;
+  };
 
-    chartData.push({
-      sens: i,
-      prob: prob,
-    });
+  const keypoints = [0, 2 * avg];
+  if (dist === "norm") {
+    // push sample points with resolution, within max sigma
+    const sigma = 5;
+    const resolution = 3;
+    for (let i = 0; i < sigma * resolution; i++) {
+      keypoints.push(avg - diff / resolution * i, avg + diff / resolution * i);
+    }
+  } else {
+    // push turning points
+    keypoints.push(avg - diff, avg + diff);
   }
+  keypoints.sort((a, b) => a - b);
 
-  const uniformRandom = () => {
-    const max = avg + diff;
-    const min = avg - diff;
-    return Math.random() * (max - min) + min;
-  };
-  const normalRandom = () => {
-    const u = 1 - Math.random(); // Converting [0,1) to (0,1]
-    const v = Math.random();
-    const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-    // Transform to the desired mean and standard deviation:
-    return z * diff + avg;
-  };
+  const ticks = avg === 0 ? [0] : [0, avg, 2 * avg];
+  const chartData = keypoints.map((x) => {
+    // clamp x to [0, 2 * avg]
+    x = Math.min(Math.max(x, 0), 2 * avg);
+    return { x, y: calcY(x) };
+  });
 
-  const res = dist === "norm" ? normalRandom() : uniformRandom();
+  const res = random(dist, avg, diff);
 
   return (
     <>
@@ -87,14 +85,14 @@ export default function Home() {
           <a
             href="https://github.com/junqiwu02/rand-sens"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             ⭐ on GitHub
           </a>
         </Button>
       </nav>
-      <main className="flex flex-col items-center justify-between px-24">
-        <Card>
+      <main className="flex flex-col items-center justify-between px-10">
+        <Card className="w-[400px] max-w-[100%]">
           <CardHeader>
             🎯 rand-sens
             <CardDescription>Get a random sensivity!</CardDescription>
@@ -123,6 +121,7 @@ export default function Home() {
             <MainChart
               lineType={dist === "norm" ? "monotone" : "step"}
               chartData={chartData}
+              ticks={ticks}
             />
 
             <div>
@@ -152,21 +151,21 @@ export default function Home() {
 
             <div>
               <Label htmlFor="res">Result</Label>
-              <div className="flex gap-2">
+              <div className="flex">
                 <Input
                   className="font-mono"
                   id="res"
                   name="res"
                   readOnly
-                  value={res.toFixed(3)}
+                  value={res}
                 />
                 {/* TODO: Add a button to copy the result to clipboard */}
                 <Button
-                  variant="link"
-                  className="text-xl p-0"
+                  variant="ghost"
+                  className="p-2"
                   onClick={forceUpdate}
                 >
-                  🔃
+                  <RefreshCw className="w-4 h-4" />
                 </Button>
               </div>
 
@@ -182,7 +181,9 @@ export default function Home() {
               className="p-0 text-muted-foreground"
               asChild
             >
-              <Link href={`${pathname}api?${params.toString()}`}>API Mode</Link>
+              <Link href={`${pathname}api?${searchParams.toString()}`}>
+                API Mode
+              </Link>
             </Button>
           </CardFooter>
         </Card>

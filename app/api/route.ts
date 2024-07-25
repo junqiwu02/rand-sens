@@ -1,12 +1,12 @@
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const params = new URLSearchParams(searchParams);
-
-  // TODO: share this logic with home page
+export function getStats(params: URLSearchParams) {
   const dist = params.get("dist") || "uni";
   const avg = parseFloat(params.get("avg") || "1");
-  const diff = parseFloat(params.get("diff") || "0.5");
+  const diff = Math.abs(parseFloat(params.get("diff") || "0.5"));
 
+  return { dist, avg, diff };
+}
+
+export function random(dist: string, avg: number, diff: number) {
   const uniformRandom = () => {
     const max = avg + diff;
     const min = avg - diff;
@@ -21,6 +21,12 @@ export async function GET(request: Request) {
   };
 
   const res = dist === "norm" ? normalRandom() : uniformRandom();
+  return res.toFixed(3);
+}
 
-  return new Response(res.toFixed(3));
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const { dist, avg, diff } = getStats(searchParams);
+
+  return new Response(random(dist, avg, diff));
 }
