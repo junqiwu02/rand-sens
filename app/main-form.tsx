@@ -23,7 +23,7 @@ import { useToast } from "@/components/ui/use-toast";
 export default function MainForm() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [res, setRes] = useState("");
+  const [res, setRes] = useState(0);
   const { toast } = useToast();
 
   const handleChange = (name: string, value: string) => {
@@ -48,7 +48,7 @@ export default function MainForm() {
   }, [dist, avg, diff]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(res);
+    navigator.clipboard.writeText(res.toFixed(3));
     toast({
       description: "📋 Copied to clipboard!",
     });
@@ -77,7 +77,7 @@ export default function MainForm() {
           </Select>
         </div>
 
-        <MainChart dist={dist} avg={avg} diff={diff} />
+        <MainChart dist={dist} avg={avg} diff={diff} res={res} />
 
         <div>
           <Label htmlFor="avg">Average Sens</Label>
@@ -112,7 +112,7 @@ export default function MainForm() {
               id="res"
               name="res"
               readOnly
-              value={res}
+              value={res.toFixed(3)}
               onClick={handleCopy}
             />
             <Button

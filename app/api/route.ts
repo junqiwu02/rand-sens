@@ -21,12 +21,12 @@ export function random(dist: string, avg: number, diff: number) {
   };
 
   const res = dist === "norm" ? normalRandom() : uniformRandom();
-  return Math.max(res, 0).toFixed(3);
+  return Math.max(res, 0);
 }
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const { dist, avg, diff } = getStats(searchParams);
 
-  return new Response(random(dist, avg, diff));
+  return new Response(random(dist, avg, diff).toFixed(3));
 }

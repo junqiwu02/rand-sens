@@ -19,7 +19,7 @@ export default function Home() {
           </a>
         </Button>
       </nav>
-      <main className="flex flex-col items-center justify-between px-10">
+      <main className="flex flex-col items-center justify-between p-10 pt-0">
         <Card className="w-[400px] max-w-[100%]">
           <CardHeader>
             🎯 rand-sens

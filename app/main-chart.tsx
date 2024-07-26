@@ -1,5 +1,16 @@
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import {
+  Area,
+  CartesianGrid,
+  ComposedChart,
+  Scatter,
+  XAxis,
+} from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 const chartConfig = {
   y: {
@@ -12,10 +23,12 @@ export function MainChart({
   dist,
   avg,
   diff,
+  res,
 }: {
   dist: string;
   avg: number;
   diff: number;
+  res: number;
 }) {
   // height of probability distribution at x
   const calcY = (x: number) => {
@@ -51,11 +64,12 @@ export function MainChart({
     .map((x) => ({ x, y: calcY(x) }));
 
   const ticks = avg === 0 ? [0] : [0, avg, 2 * avg];
+  const domain = [0, keypoints.at(-1)!];
   const lineType = dist === "norm" ? "monotone" : "stepAfter";
 
   return (
     <ChartContainer config={chartConfig}>
-      <AreaChart
+      <ComposedChart
         accessibilityLayer
         data={chartData}
         margin={{
@@ -70,12 +84,16 @@ export function MainChart({
           tickLine={false}
           axisLine={false}
           ticks={ticks}
-          domain={["dataMin", "dataMax"]}
+          domain={domain}
           // 3 significant digits, remove trailing zeros
           tickFormatter={(value) =>
             value.toPrecision(3).replace(/(\.\d*[1-9])0+$|\.0*$/, "$1")
           }
         />
+        {/* <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent hideLabel />}
+        /> */}
         <defs>
           <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--color-y)" stopOpacity={0.8} />
@@ -90,7 +108,13 @@ export function MainChart({
           stroke="var(--color-y)"
           stackId="a"
         />
-      </AreaChart>
+        <Scatter
+          dataKey="Result"
+          data={[{ x: res, Result: calcY(res) }]}
+          fill="var(--color-y)"
+          isAnimationActive={false}
+        />
+      </ComposedChart>
     </ChartContainer>
   );
 }
