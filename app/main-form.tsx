@@ -34,44 +34,14 @@ export default function MainForm() {
       newSearchParams.delete(name);
     }
     // use native API to avoid re-rendering server components
-    window.history.replaceState(null, '', `${pathname}?${newSearchParams.toString()}`);
+    window.history.replaceState(
+      null,
+      "",
+      `${pathname}?${newSearchParams.toString()}`
+    );
   };
 
   const { dist, avg, diff } = getStats(searchParams);
-
-  // height of probability distribution at x
-  const calcY = (x: number) => {
-    if (dist === "norm") {
-      const exponent = -Math.pow(x - avg, 2) / (2 * Math.pow(diff, 2));
-      return (1 / (diff * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
-    }
-    // exclude right side to get correct behavior for stepAfter
-    return avg - diff <= x && x < avg + diff ? 1 / (2 * diff) : 0;
-  };
-
-  const keypoints = [0, 2 * avg];
-  if (dist === "norm") {
-    // push sample points with resolution, within max sigma
-    const sigma = 5;
-    const resolution = 3;
-    for (let i = 0; i < sigma * resolution; i++) {
-      keypoints.push(
-        avg - (diff / resolution) * i,
-        avg + (diff / resolution) * i
-      );
-    }
-  } else {
-    // push turning points
-    keypoints.push(avg - diff, avg + diff);
-  }
-  keypoints.sort((a, b) => a - b);
-
-  const ticks = avg === 0 ? [0] : [0, avg, 2 * avg];
-  const chartData = keypoints.map((x) => {
-    // clamp x to [0, 2 * avg]
-    x = Math.min(Math.max(x, 0), 2 * avg);
-    return { x, y: calcY(x) };
-  });
 
   useEffect(() => {
     setRes(random(dist, avg, diff));
@@ -107,11 +77,7 @@ export default function MainForm() {
           </Select>
         </div>
 
-        <MainChart
-          lineType={dist === "norm" ? "monotone" : "stepAfter"}
-          chartData={chartData}
-          ticks={ticks}
-        />
+        <MainChart dist={dist} avg={avg} diff={diff} />
 
         <div>
           <Label htmlFor="avg">Average Sens</Label>

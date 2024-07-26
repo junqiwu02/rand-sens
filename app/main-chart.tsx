@@ -9,14 +9,50 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function MainChart({
-  lineType,
-  chartData,
-  ticks,
+  dist,
+  avg,
+  diff,
 }: {
-  lineType: "stepAfter" | "monotone";
-  chartData: any[];
-  ticks: number[];
+  dist: string;
+  avg: number;
+  diff: number;
 }) {
+  // height of probability distribution at x
+  const calcY = (x: number) => {
+    if (dist === "norm") {
+      const exponent = -Math.pow(x - avg, 2) / (2 * Math.pow(diff, 2));
+      return (1 / (diff * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
+    }
+    // exclude right side to get correct behavior for stepAfter
+    return avg - diff <= x && x < avg + diff ? 1 / (2 * diff) : 0;
+  };
+
+  const keypoints = [0, 2 * avg];
+  if (dist === "norm") {
+    // push sample points with resolution, within max sigma
+    const sigma = 4;
+    const resolution = 3;
+    for (let i = 0; i < sigma * resolution; i++) {
+      keypoints.push(
+        avg - (diff / resolution) * i,
+        avg + (diff / resolution) * i
+      );
+    }
+  } else {
+    // push turning points
+    keypoints.push(avg - diff, avg + diff);
+    // push a bit outside of the max for better visibility when max > 2 * avg
+    keypoints.push(avg + 1.2 * diff);
+  }
+  keypoints.sort((a, b) => a - b);
+
+  const chartData = keypoints
+    .filter((x) => x >= 0)
+    .map((x) => ({ x, y: calcY(x) }));
+
+  const ticks = avg === 0 ? [0] : [0, avg, 2 * avg];
+  const lineType = dist === "norm" ? "monotone" : "stepAfter";
+
   return (
     <ChartContainer config={chartConfig}>
       <AreaChart

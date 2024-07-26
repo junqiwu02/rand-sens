@@ -21,7 +21,7 @@ export function random(dist: string, avg: number, diff: number) {
   };
 
   const res = dist === "norm" ? normalRandom() : uniformRandom();
-  return res.toFixed(3);
+  return Math.max(res, 0).toFixed(3);
 }
 
 export async function GET(request: Request) {
