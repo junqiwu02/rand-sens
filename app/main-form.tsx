@@ -16,7 +16,7 @@ import Link from "next/link";
 import { MainChart } from "@/app/main-chart";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getStats, random } from "@/app/api/route";
+import { getStats, random } from "@/app/api/lib";
 import { RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 

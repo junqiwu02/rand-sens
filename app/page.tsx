@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import MainForm from "@/app/main-form";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -26,7 +27,9 @@ export default function Home() {
             <CardDescription>Get a random sensivity!</CardDescription>
           </CardHeader>
 
-          <MainForm />
+          <Suspense>
+            <MainForm />
+          </Suspense>
         </Card>
       </main>
     </>
