@@ -1,10 +1,4 @@
-import {
-  Area,
-  CartesianGrid,
-  ComposedChart,
-  Scatter,
-  XAxis,
-} from "recharts";
+import { Area, CartesianGrid, ComposedChart, Scatter, XAxis } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
@@ -63,7 +57,8 @@ export function MainChart({
     .filter((x) => x >= 0)
     .map((x) => ({ x, y: calcY(x) }));
 
-  const ticks = avg === 0 ? [0] : [0, avg, Math.max(2 * avg, keypoints.at(-1)!)];
+  const ticks =
+    avg === 0 ? [0] : [0, avg, Math.max(2 * avg, keypoints.at(-1)!)];
   const domain = [0, keypoints.at(-1)!];
   const lineType = dist === "norm" ? "monotone" : "stepAfter";
 

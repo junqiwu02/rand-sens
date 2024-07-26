@@ -30,3 +30,5 @@ export async function GET(request: Request) {
 
   return new Response(random(dist, avg, diff).toFixed(3));
 }
+
+export const runtime = "edge";
