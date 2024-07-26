@@ -132,9 +132,9 @@ export default function MainForm() {
 
       <CardFooter>
         <Button variant="link" className="p-0 text-muted-foreground" asChild>
-          <Link href={`${pathname}api?${searchParams.toString()}`}>
+          <a href={`${pathname}api?${searchParams.toString()}`}>
             API Mode
-          </Link>
+          </a>
         </Button>
       </CardFooter>
     </>
