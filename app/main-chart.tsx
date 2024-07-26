@@ -44,7 +44,7 @@ export function MainChart({
   if (dist === "norm") {
     // push sample points with resolution, within max sigma
     const sigma = 4;
-    const resolution = 3;
+    const resolution = 4;
     for (let i = 0; i < sigma * resolution; i++) {
       keypoints.push(
         avg - (diff / resolution) * i,
@@ -55,7 +55,7 @@ export function MainChart({
     // push turning points
     keypoints.push(avg - diff, avg + diff);
     // push a bit outside of the max for better visibility when max > 2 * avg
-    keypoints.push(avg + 1.2 * diff);
+    // keypoints.push(avg + 1.2 * diff);
   }
   keypoints.sort((a, b) => a - b);
 
@@ -63,9 +63,20 @@ export function MainChart({
     .filter((x) => x >= 0)
     .map((x) => ({ x, y: calcY(x) }));
 
-  const ticks = avg === 0 ? [0] : [0, avg, 2 * avg];
+  const ticks = avg === 0 ? [0] : [0, avg, Math.max(2 * avg, keypoints.at(-1)!)];
   const domain = [0, keypoints.at(-1)!];
   const lineType = dist === "norm" ? "monotone" : "stepAfter";
+
+  const ResultTooltipContent = (props: any) => {
+    // intercept tooltip content and replace result with actual result
+    const { payload, ...otherProps } = props;
+    const modifiedPayload = payload?.slice(0, 1).map((item: any) => ({
+      ...item,
+      value: res.toFixed(3),
+      name: `Result`,
+    }));
+    return <ChartTooltipContent {...otherProps} payload={modifiedPayload} />;
+  };
 
   return (
     <ChartContainer config={chartConfig}>
@@ -90,10 +101,10 @@ export function MainChart({
             value.toPrecision(3).replace(/(\.\d*[1-9])0+$|\.0*$/, "$1")
           }
         />
-        {/* <ChartTooltip
+        <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent hideLabel />}
-        /> */}
+          content={<ResultTooltipContent hideLabel />}
+        />
         <defs>
           <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="var(--color-y)" stopOpacity={0.8} />
@@ -107,10 +118,11 @@ export function MainChart({
           fillOpacity={0.4}
           stroke="var(--color-y)"
           stackId="a"
+          activeDot={false}
         />
         <Scatter
-          dataKey="Result"
-          data={[{ x: res, Result: calcY(res) }]}
+          dataKey="y"
+          data={[{ x: res, y: calcY(res) }]}
           fill="var(--color-y)"
           isAnimationActive={false}
         />
