@@ -59,7 +59,7 @@ export default function MainForm() {
             onValueChange={(value) => handleChange("dist", value)}
             required
           >
-            <SelectTrigger id="dist">
+            <SelectTrigger id="dist" aria-label="Distribution">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -71,9 +71,7 @@ export default function MainForm() {
           </Select>
         </div>
 
-        <div onClick={handleCopy}>
-          <MainChart dist={dist} avg={avg} diff={diff} res={res} />
-        </div>
+        <MainChart dist={dist} avg={avg} diff={diff} res={res} />
 
         <div>
           <Label htmlFor="avg">Average Sens</Label>
@@ -117,6 +115,7 @@ export default function MainForm() {
               onClick={() => setRes(random(dist, avg, diff))}
             >
               <RefreshCw className="w-4 h-4" />
+              <span className="sr-only">New Result</span>
             </Button>
           </div>
 
