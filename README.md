@@ -1,6 +1,9 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎯 rand-sens
+_I got tired of going to Random.org between AimLabs scenarios, so I made a web app to get random sensitivities with a single click 😎_
 
-## Getting Started
+Visit the page at [rand-sens.vercel.app](https://rand-sens.vercel.app/)!
+
+## Development
 
 First, run the development server:
 
