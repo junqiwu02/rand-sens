@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "rand-sens",
-  description: "Get a random sensivity!",
+  description: "Get a random sensitivity!",
 };
 
 export default function RootLayout({
