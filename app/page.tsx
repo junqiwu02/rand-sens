@@ -24,7 +24,7 @@ export default function Home() {
         <Card className="w-[400px] max-w-[100%]">
           <CardHeader>
             🎯 rand-sens
-            <CardDescription>Get a random sensivity!</CardDescription>
+            <CardDescription>Get a random sensitivity!</CardDescription>
           </CardHeader>
 
           <Suspense>
