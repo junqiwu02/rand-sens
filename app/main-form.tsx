@@ -12,16 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
 import { MainChart } from "@/app/main-chart";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getStats, random } from "@/app/api/lib";
 import { RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function MainForm() {
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [res, setRes] = useState(0);
   const { toast } = useToast();
@@ -34,11 +32,7 @@ export default function MainForm() {
       newSearchParams.delete(name);
     }
     // use native API to avoid re-rendering server components
-    window.history.replaceState(
-      null,
-      "",
-      `${pathname}?${newSearchParams.toString()}`
-    );
+    window.history.replaceState(null, "", `/?${newSearchParams.toString()}`);
   };
 
   const { dist, avg, diff } = getStats(searchParams);
@@ -77,7 +71,9 @@ export default function MainForm() {
           </Select>
         </div>
 
-        <MainChart dist={dist} avg={avg} diff={diff} res={res} />
+        <div onClick={handleCopy}>
+          <MainChart dist={dist} avg={avg} diff={diff} res={res} />
+        </div>
 
         <div>
           <Label htmlFor="avg">Average Sens</Label>
@@ -105,7 +101,7 @@ export default function MainForm() {
         </div>
 
         <div>
-          <Label htmlFor="res">Result</Label>
+          <Label htmlFor="res">😎 Result</Label>
           <div className="flex">
             <Input
               className="font-mono"
@@ -125,16 +121,14 @@ export default function MainForm() {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Bookmark to get a new result on every visit!
+            Bookmark for a new result on every visit.
           </p>
         </div>
       </CardContent>
 
       <CardFooter>
         <Button variant="link" className="p-0 text-muted-foreground" asChild>
-          <a href={`${pathname}api?${searchParams.toString()}`}>
-            API Mode
-          </a>
+          <a href={`/api?${searchParams.toString()}`}>API Mode</a>
         </Button>
       </CardFooter>
     </>

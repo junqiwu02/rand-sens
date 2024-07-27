@@ -58,7 +58,7 @@ export function MainChart({
     .map((x) => ({ x, y: calcY(x) }));
 
   const ticks =
-    avg === 0 ? [0] : [0, avg, Math.max(2 * avg, keypoints.at(-1)!)];
+    avg === 0 ? [0] : [0, avg, keypoints.at(-1)!];
   const domain = [0, keypoints.at(-1)!];
   const lineType = dist === "norm" ? "monotone" : "stepAfter";
 
