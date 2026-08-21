@@ -1,10 +1,27 @@
-import { Area, CartesianGrid, ComposedChart, Scatter, XAxis } from "recharts";
+import {
+  Area,
+  CartesianGrid,
+  ComposedChart,
+  Scatter,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+
+function ResultTooltipContent({ res, payload, ...otherProps }: any) {
+  const modifiedPayload = payload?.slice(0, 1).map((item: any) => ({
+    ...item,
+    value: res.toFixed(3),
+    name: "Result",
+  }));
+
+  return <ChartTooltipContent {...otherProps} payload={modifiedPayload} />;
+}
 
 const chartConfig = {
   y: {
@@ -57,21 +74,14 @@ export function MainChart({
     .filter((x) => x >= 0)
     .map((x) => ({ x, y: calcY(x) }));
 
+  const yDomain = [
+    0,
+    Math.max(...chartData.map(({ y }) => y)) * 1.1,
+  ];
   const ticks =
     avg === 0 ? [0] : [0, avg, keypoints.at(-1)!];
   const domain = [0, keypoints.at(-1)!];
   const lineType = dist === "norm" ? "monotone" : "stepAfter";
-
-  const ResultTooltipContent = (props: any) => {
-    // intercept tooltip content and replace result with actual result
-    const { payload, ...otherProps } = props;
-    const modifiedPayload = payload?.slice(0, 1).map((item: any) => ({
-      ...item,
-      value: res.toFixed(3),
-      name: `Result`,
-    }));
-    return <ChartTooltipContent {...otherProps} payload={modifiedPayload} />;
-  };
 
   return (
     <ChartContainer config={chartConfig}>
@@ -84,6 +94,7 @@ export function MainChart({
         }}
       >
         <CartesianGrid vertical={false} />
+        <YAxis hide domain={yDomain} />
         <XAxis
           type="number"
           dataKey="x"
@@ -98,7 +109,7 @@ export function MainChart({
         />
         <ChartTooltip
           cursor={false}
-          content={<ResultTooltipContent hideLabel />}
+          content={<ResultTooltipContent res={res} hideLabel />}
         />
         <defs>
           <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
