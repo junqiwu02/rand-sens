@@ -15,7 +15,7 @@ import {
 import { MainChart } from "@/app/main-chart";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getStats, random } from "@/app/api/lib";
+import { getStats, random } from "@/app/lib";
 import { RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -120,16 +120,10 @@ export default function MainForm() {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Bookmark for a new result on every visit.
+            Bookmark for a new result on every visit!
           </p>
         </div>
       </CardContent>
-
-      <CardFooter>
-        <Button variant="link" className="p-0 text-muted-foreground" asChild>
-          <a href={`/api?${searchParams.toString()}`}>API Mode</a>
-        </Button>
-      </CardFooter>
     </>
   );
 }
