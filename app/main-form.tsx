@@ -71,7 +71,13 @@ export default function MainForm() {
           </Select>
         </div>
 
-        <MainChart dist={dist} avg={avg} diff={diff} res={res} />
+        <MainChart
+          dist={dist}
+          avg={avg}
+          diff={diff}
+          res={res}
+          onClick={handleCopy}
+        />
 
         <div>
           <Label htmlFor="avg">Average Sens</Label>

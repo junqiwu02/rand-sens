@@ -35,11 +35,13 @@ export function MainChart({
   avg,
   diff,
   res,
+  onClick,
 }: {
   dist: string;
   avg: number;
   diff: number;
   res: number;
+  onClick: () => void;
 }) {
   // height of probability distribution at x
   const calcY = (x: number) => {
@@ -84,7 +86,7 @@ export function MainChart({
   const lineType = dist === "norm" ? "monotone" : "stepAfter";
 
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer config={chartConfig} onClick={onClick}>
       <ComposedChart
         accessibilityLayer
         data={chartData}
